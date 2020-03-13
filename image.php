@@ -46,8 +46,7 @@ function getBase64Image(string $fileName): string
 
             ob_start();
             imagepng($cropped);
-            $croppedChildren[] = sprintf('data:%s;base64, %s', $imageInfo['mime'], base64_encode(ob_get_contents()));
-            ob_end_clean();
+            $croppedChildren[] = sprintf('data:%s;base64, %s', $imageInfo['mime'], base64_encode(ob_get_clean()));
             imagedestroy($cropped);
         }
         $croppedArray[] = $croppedChildren;
