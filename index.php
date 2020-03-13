@@ -5,9 +5,6 @@ require_once 'functions.php';
 
 initSession();
 $imgFiles = glob('img/*.*');
-foreach ($imgFiles as $key => $imgFile) {
-    saveSession('img' . $key, $imgFile);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,6 +41,7 @@ foreach ($imgFiles as $key => $imgFile) {
 </head>
 <body>
 <?php foreach ($imgFiles as $key => $imgFile): ?>
+<?php saveSession('img' . $key, $imgFile); ?>
     <div class="img<?= $key ?> image_outer" data-id="<?= $key ?>" style="display: flex;flex-wrap: wrap;"></div>
 <?php endforeach; ?>
 </body>
