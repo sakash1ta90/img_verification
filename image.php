@@ -18,24 +18,24 @@ function getBase64Image(string $fileName): string
     if (!file_exists($fileName)) {
         return '';
     }
-    $imageInfo = getimagesize($fileName);
-    if ($imageInfo[2] === IMAGETYPE_PNG) {
+    [0 => $width, 1 => $height, 2 => $imageType, 'mime' => $mime] = getimagesize($fileName);
+    if ($imageType === IMAGETYPE_PNG) {
         $im = imagecreatefrompng($fileName);
-    } elseif ($imageInfo[2] === IMAGETYPE_JPEG) {
+    } elseif ($imageType === IMAGETYPE_JPEG) {
         $im = imagecreatefromjpeg($fileName);
     } else {
         return '';
     }
 
     $croppedArray = [];
-    for ($i = 0; $i < $imageInfo[1]; $i += CROP_SIZE) {
+    for ($i = 0; $i < $height; $i += CROP_SIZE) {
         $croppedChildren = [];
-        for ($j = 0; $j < $imageInfo[0]; $j += CROP_SIZE) {
+        for ($j = 0; $j < $width; $j += CROP_SIZE) {
             $cropped = imagecrop($im, [
                 'x' => $j,
                 'y' => $i,
-                'width' => $j + CROP_SIZE > $imageInfo[0] ? $imageInfo[0] - $j : CROP_SIZE,
-                'height' => $i + CROP_SIZE > $imageInfo[1] ? $imageInfo[1] - $i : CROP_SIZE
+                'width' => $j + CROP_SIZE > $width ? $width - $j : CROP_SIZE,
+                'height' => $i + CROP_SIZE > $height ? $height - $i : CROP_SIZE
             ]);
             if ($cropped === false) {
                 imagedestroy($im);
@@ -46,7 +46,7 @@ function getBase64Image(string $fileName): string
 
             ob_start();
             imagepng($cropped);
-            $croppedChildren[] = sprintf('data:%s;base64, %s', $imageInfo['mime'], base64_encode(ob_get_clean()));
+            $croppedChildren[] = sprintf('data:%s;base64, %s', $mime, base64_encode(ob_get_clean()));
             imagedestroy($cropped);
         }
         $croppedArray[] = $croppedChildren;
